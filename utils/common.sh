@@ -44,6 +44,37 @@ check_root() {
     fi
 }
 
+# Function to find FreeRADIUS configuration directory
+find_freeradius_dir() {
+    local config_dir=$(find /etc -type d -name "freeradius" -o -name "raddb" 2>/dev/null | head -n1)
+    if [ -z "$config_dir" ]; then
+        error "Cannot find FreeRADIUS configuration directory."
+        return 1
+    fi
+    
+    # Check for version 3 directory
+    if [ -d "$config_dir/3.0" ]; then
+        echo "$config_dir/3.0"
+    else
+        echo "$config_dir"
+    fi
+    return 0
+}
+
+# Function to check if FreeRADIUS is installed
+check_freeradius_installed() {
+    if ! dpkg -l | grep -q freeradius; then
+        error "FreeRADIUS is not installed. Please run the installation script first."
+        return 1
+    fi
+    return 0
+}
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 # Function to display a header
 show_header() {
     clear
