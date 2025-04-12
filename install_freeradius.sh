@@ -23,14 +23,40 @@ log() {
 log "Updating system packages..."
 apt-get update -qq
 
+# Fix any broken packages first
+log "Fixing any broken packages..."
+apt-get -f install -y
+dpkg --configure -a
+
+# Remove any previous failed FreeRADIUS installation
+log "Removing any previous failed FreeRADIUS installation..."
+apt-get remove --purge -y freeradius freeradius-postgresql freeradius-utils || true
+apt-get autoremove -y
+
 # Install FreeRADIUS and related packages
 log "Installing FreeRADIUS and related packages..."
-apt-get install -y freeradius freeradius-postgresql freeradius-utils postgresql postgresql-client
+DEBIAN_FRONTEND=noninteractive apt-get install -y freeradius freeradius-postgresql freeradius-utils postgresql postgresql-client
 
 # Check if installation was successful
 if ! command -v radiusd &> /dev/null && ! command -v freeradius &> /dev/null; then
     log "ERROR: FreeRADIUS installation failed."
     exit 1
+fi
+
+# Ensure directory structure exists (Ubuntu paths might differ)
+log "Ensuring directory structure exists..."
+if [ ! -d "/etc/freeradius" ]; then
+    if [ -d "/etc/raddb" ]; then
+        log "Found FreeRADIUS directory at /etc/raddb instead of /etc/freeradius"
+        mkdir -p /etc/freeradius
+        ln -sf /etc/raddb /etc/freeradius/3.0
+    else
+        log "Creating FreeRADIUS directories manually..."
+        mkdir -p /etc/freeradius/3.0/sites-available
+        mkdir -p /etc/freeradius/3.0/sites-enabled
+        mkdir -p /etc/freeradius/3.0/mods-available
+        mkdir -p /etc/freeradius/3.0/mods-enabled
+    fi
 fi
 
 # Backup original configuration
@@ -44,13 +70,34 @@ log "Creating directory structure..."
 mkdir -p /etc/freeradius/3.0/certs
 mkdir -p /etc/freeradius/3.0/users
 mkdir -p /var/log/radius/
+mkdir -p /etc/freeradius/3.0/radiusd.conf.d
+mkdir -p /etc/freeradius/3.0/policy.d
+
+# Get FreeRADIUS directory ownership
+if getent group | grep -q "^freerad:"; then
+    RADIUS_USER="freerad"
+elif getent group | grep -q "^radiusd:"; then
+    RADIUS_USER="radiusd"
+else
+    log "WARNING: Could not find FreeRADIUS user/group. Using default 'freerad'"
+    RADIUS_USER="freerad"
+    # Create group if it doesn't exist
+    getent group freerad >/dev/null || groupadd -r freerad
+    getent passwd freerad >/dev/null || useradd -r -g freerad -s /sbin/nologin -d /var/lib/radiusd -c "FreeRADIUS user" freerad
+fi
+
+# Check if clients.conf exists and create if needed
+if [ ! -f "/etc/freeradius/3.0/clients.conf" ]; then
+    log "Creating new clients.conf file..."
+    touch /etc/freeradius/3.0/clients.conf
+fi
 
 # Set proper permissions
 log "Setting file permissions..."
-chown -R freerad:freerad /etc/freeradius/3.0/
-chown -R freerad:freerad /var/log/radius/
-chmod 755 /etc/freeradius/3.0/
-chmod 660 /etc/freeradius/3.0/clients.conf
+chown -R $RADIUS_USER:$RADIUS_USER /etc/freeradius/3.0/ || true
+chown -R $RADIUS_USER:$RADIUS_USER /var/log/radius/ || true
+chmod 755 /etc/freeradius/3.0/ || true
+chmod 660 /etc/freeradius/3.0/clients.conf || true
 
 # Configure PostgreSQL database
 log "Setting up PostgreSQL database for FreeRADIUS..."
@@ -315,11 +362,39 @@ EOF
 # Configure users file with a test user
 log "Creating a test user..."
 mkdir -p /etc/freeradius/3.0/users
-cat > /etc/freeradius/3.0/users.conf << EOF
+
+# Check if standard FreeRADIUS files directory exists
+if [ -d "/etc/freeradius/3.0/mods-config/files" ]; then
+    log "Found standard users file location"
+    cat > /etc/freeradius/3.0/mods-config/files/authorize << EOF
 # Test user - remove in production
 testuser Cleartext-Password := "password"
         Reply-Message := "Hello, %{User-Name}"
 EOF
+else
+    log "Using alternate users file location"
+    # Create users file in both locations to be safe
+    mkdir -p /etc/freeradius/3.0/mods-config/files
+    cat > /etc/freeradius/3.0/mods-config/files/authorize << EOF
+# Test user - remove in production
+testuser Cleartext-Password := "password"
+        Reply-Message := "Hello, %{User-Name}"
+EOF
+    
+    # Also create in users.conf for backward compatibility
+    cat > /etc/freeradius/3.0/users.conf << EOF
+# Test user - remove in production
+testuser Cleartext-Password := "password"
+        Reply-Message := "Hello, %{User-Name}"
+EOF
+
+    # And in users directory as individual file
+    cat > /etc/freeradius/3.0/users/testuser << EOF
+# Test user - remove in production
+testuser Cleartext-Password := "password"
+        Reply-Message := "Hello, %{User-Name}"
+EOF
+fi
 
 # Configure radiusd.conf for better performance on your hardware
 log "Optimizing RADIUS configuration for your hardware..."
@@ -330,6 +405,10 @@ sed -i 's/^max_servers =.*/max_servers = 12/' /etc/freeradius/3.0/radiusd.conf
 # Update log settings
 log "Updating log settings..."
 mkdir -p /etc/freeradius/3.0/radiusd.conf.d
+mkdir -p /var/log/radius
+touch /var/log/radius/radius.log
+
+# Create main logging configuration
 cat > /etc/freeradius/3.0/radiusd.conf.d/logging << EOF
 log {
     destination = files
@@ -341,6 +420,17 @@ log {
     auth_goodpass = yes
 }
 EOF
+
+# Set permissions on log files
+chown -R $RADIUS_USER:$RADIUS_USER /var/log/radius/ || true
+chmod 755 /var/log/radius/ || true
+chmod 644 /var/log/radius/radius.log || true
+
+# Create a symbolic link to logging if custom conf.d isn't supported
+if [ ! -d "/etc/freeradius/3.0/conf.d" ]; then
+    mkdir -p /etc/freeradius/3.0/conf.d
+    ln -sf ../radiusd.conf.d/logging /etc/freeradius/3.0/conf.d/logging
+fi
 
 # Restart FreeRADIUS to apply changes
 log "Restarting FreeRADIUS service..."
