@@ -81,7 +81,97 @@ log "Checking if database schema exists..."
 TABLES_EXIST=$(su - postgres -c "psql -t -c \"SELECT count(*) FROM information_schema.tables WHERE table_schema='public';\" radius" | xargs)
 if [ "$TABLES_EXIST" -eq "0" ]; then
     log "Importing FreeRADIUS schema to PostgreSQL..."
-    su - postgres -c "psql -d radius -f /etc/freeradius/3.0/mods-config/sql/main/postgresql/schema.sql"
+    # First copy the schema to a location postgres can access
+    SCHEMA_PATH="/tmp/radius_schema.sql"
+    if [ -f "/etc/freeradius/3.0/mods-config/sql/main/postgresql/schema.sql" ]; then
+        cp /etc/freeradius/3.0/mods-config/sql/main/postgresql/schema.sql $SCHEMA_PATH
+        chown postgres:postgres $SCHEMA_PATH
+        su - postgres -c "psql -d radius -f $SCHEMA_PATH"
+        rm $SCHEMA_PATH
+    else
+        log "ERROR: Schema file not found. Creating empty tables instead."
+        # Create basic tables if schema file is not available
+        su - postgres -c "psql -d radius -c \"
+            CREATE TABLE IF NOT EXISTS radcheck (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(64) NOT NULL DEFAULT '',
+                attribute VARCHAR(64) NOT NULL DEFAULT '',
+                op CHAR(2) NOT NULL DEFAULT '==',
+                value VARCHAR(253) NOT NULL DEFAULT ''
+            );
+            CREATE TABLE IF NOT EXISTS radreply (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(64) NOT NULL DEFAULT '',
+                attribute VARCHAR(64) NOT NULL DEFAULT '',
+                op CHAR(2) NOT NULL DEFAULT '=',
+                value VARCHAR(253) NOT NULL DEFAULT ''
+            );
+            CREATE TABLE IF NOT EXISTS radgroupcheck (
+                id SERIAL PRIMARY KEY,
+                groupname VARCHAR(64) NOT NULL DEFAULT '',
+                attribute VARCHAR(64) NOT NULL DEFAULT '',
+                op CHAR(2) NOT NULL DEFAULT '==',
+                value VARCHAR(253) NOT NULL DEFAULT ''
+            );
+            CREATE TABLE IF NOT EXISTS radgroupreply (
+                id SERIAL PRIMARY KEY,
+                groupname VARCHAR(64) NOT NULL DEFAULT '',
+                attribute VARCHAR(64) NOT NULL DEFAULT '',
+                op CHAR(2) NOT NULL DEFAULT '=',
+                value VARCHAR(253) NOT NULL DEFAULT ''
+            );
+            CREATE TABLE IF NOT EXISTS radusergroup (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(64) NOT NULL DEFAULT '',
+                groupname VARCHAR(64) NOT NULL DEFAULT '',
+                priority INTEGER NOT NULL DEFAULT 1
+            );
+            CREATE TABLE IF NOT EXISTS radacct (
+                radacctid BIGSERIAL PRIMARY KEY,
+                acctsessionid VARCHAR(64) NOT NULL,
+                acctuniqueid VARCHAR(32) NOT NULL,
+                username VARCHAR(64) NOT NULL,
+                realm VARCHAR(64),
+                nasipaddress VARCHAR(15) NOT NULL,
+                nasportid VARCHAR(15),
+                nasporttype VARCHAR(32),
+                acctstarttime TIMESTAMP WITH TIME ZONE,
+                acctupdatetime TIMESTAMP WITH TIME ZONE,
+                acctstoptime TIMESTAMP WITH TIME ZONE,
+                acctinterval BIGINT,
+                acctsessiontime BIGINT,
+                acctauthentic VARCHAR(32),
+                connectinfo_start VARCHAR(50),
+                connectinfo_stop VARCHAR(50),
+                acctinputoctets BIGINT,
+                acctoutputoctets BIGINT,
+                calledstationid VARCHAR(50),
+                callingstationid VARCHAR(50),
+                acctterminatecause VARCHAR(32),
+                servicetype VARCHAR(32),
+                framedprotocol VARCHAR(32),
+                framedipaddress VARCHAR(15)
+            );
+            CREATE TABLE IF NOT EXISTS radpostauth (
+                id BIGSERIAL PRIMARY KEY,
+                username VARCHAR(64) NOT NULL,
+                pass VARCHAR(64) NOT NULL,
+                reply VARCHAR(32) NOT NULL,
+                authdate TIMESTAMP WITH TIME ZONE NOT NULL default now()
+            );
+            CREATE TABLE IF NOT EXISTS nas (
+                id SERIAL PRIMARY KEY,
+                nasname VARCHAR(128) NOT NULL,
+                shortname VARCHAR(32),
+                type VARCHAR(30),
+                ports INTEGER,
+                secret VARCHAR(60),
+                server VARCHAR(64),
+                community VARCHAR(50),
+                description VARCHAR(200)
+            );
+        \""
+    fi
 else
     log "Database schema already exists. Skipping import."
 fi
@@ -224,7 +314,8 @@ EOF
 
 # Configure users file with a test user
 log "Creating a test user..."
-cat > /etc/freeradius/3.0/users/default << EOF
+mkdir -p /etc/freeradius/3.0/users
+cat > /etc/freeradius/3.0/users.conf << EOF
 # Test user - remove in production
 testuser Cleartext-Password := "password"
         Reply-Message := "Hello, %{User-Name}"
@@ -238,6 +329,7 @@ sed -i 's/^max_servers =.*/max_servers = 12/' /etc/freeradius/3.0/radiusd.conf
 
 # Update log settings
 log "Updating log settings..."
+mkdir -p /etc/freeradius/3.0/radiusd.conf.d
 cat > /etc/freeradius/3.0/radiusd.conf.d/logging << EOF
 log {
     destination = files
