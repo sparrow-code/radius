@@ -4,12 +4,12 @@ A comprehensive set of scripts to automate the installation, configuration, and 
 
 ## Features
 
-- **Automated Installation**: Install and configure FreeRADIUS with PostgreSQL backend.
-- **User Management**: Add, update, and manage RADIUS users and groups.
-- **Client Management**: Add and manage RADIUS clients.
-- **OpenVPN Integration**: Seamless integration with OpenVPN for authentication.
-- **PostgreSQL Integration**: Deep integration with PostgreSQL for user and client data storage.
-- **Diagnostics**: Scripts to verify and troubleshoot the setup.
+- **Automated Installation**: Streamlined installation and configuration of FreeRADIUS with PostgreSQL backend
+- **User Management**: Efficient tools to add, update, and manage RADIUS users and groups
+- **Client Management**: Simple interface for adding and managing RADIUS clients
+- **OpenVPN Integration**: Seamless integration with OpenVPN for authentication
+- **PostgreSQL Integration**: Deep integration with PostgreSQL for scalable user and client data storage
+- **Diagnostics**: Advanced diagnostic scripts for system verification and troubleshooting
 
 ## Prerequisites
 
@@ -22,8 +22,8 @@ A comprehensive set of scripts to automate the installation, configuration, and 
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/freeradius-setup.git
-   cd freeradius-setup
+   git clone https://github.com/sparrow-code/radius.git
+   cd radius
    ```
 
 2. Make the scripts executable:
@@ -38,7 +38,7 @@ A comprehensive set of scripts to automate the installation, configuration, and 
    sudo ./start.sh
    ```
 
-   Follow the interactive prompts to complete the setup.
+   Follow the interactive prompts to complete the installation.
 
 ## Usage
 
@@ -104,10 +104,38 @@ Run the diagnostics script to identify and fix common issues:
 sudo ./vpn_diagnostics.sh
 ```
 
+## PostgreSQL Configuration Details
+
+The `radius_postgresql_setup.sh` script configures PostgreSQL with optimized settings for FreeRADIUS:
+
+```
+sql {
+    # Connection pool optimization
+    pool {
+        start = 5
+        min = 4
+        max = 10
+        idle_timeout = 300
+        uses = 0
+        lifetime = 0
+        retry_delay = 30
+        # Other pool settings...
+    }
+
+    # Read configuration
+    read_clients = yes
+    client_table = "nas"
+
+    # Table configuration
+    accounting_table = "radacct"
+    # Other table settings...
+}
+```
+
 ## File Structure
 
 ```
-freeradius-setup/
+radius/
 ├── start.sh                  # Main setup script
 ├── radius_add_user.sh        # User management script
 ├── radius_add_client.sh      # Client management script
@@ -120,14 +148,28 @@ freeradius-setup/
 
 ## Security Considerations
 
-- Use strong passwords for RADIUS users and clients.
-- Restrict access to the RADIUS server using firewall rules.
-- Regularly update the server and scripts to patch vulnerabilities.
+- Use strong passwords for RADIUS users and clients
+- Restrict access to the RADIUS server using firewall rules
+- Regularly update the server and scripts to patch vulnerabilities
+- Follow the principle of least privilege for database access
+- Enable TLS encryption for sensitive authentication data
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- The FreeRADIUS team for their excellent authentication server
+- The PostgreSQL community for their robust database system
+- All contributors who have helped improve this project
