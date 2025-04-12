@@ -1,0 +1,20 @@
+# OpenVPN policy for FreeRADIUS
+# This policy handles authentication for OpenVPN clients
+
+policy openvpn {
+    # Log authentication attempts
+    auth_log {
+        reply = no
+    }
+    
+    # Check if user exists
+    if (User-Name =~ /^[[:alnum:]._-]+$/) {        # Valid username format, continue
+        update control {
+            Auth-Type := PAP
+        }
+        ok
+    } else {
+        # Invalid username format
+        reject "Invalid username format"
+    }
+}

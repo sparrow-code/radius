@@ -325,9 +325,12 @@ policy openvpn {
         ok
     } else {
         # Invalid username format
-        reject "Invalid username format"
+        reject {
+            message = "Invalid username format"
+        }
     }
 }
+EOF
 EOF
     fi
 fi

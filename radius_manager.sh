@@ -4,26 +4,15 @@
 # This script provides a management interface for FreeRADIUS server
 # Usage: sudo bash radius_manager.sh [option]
 
-# Color codes for better readability
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Check if script is run as root
-if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}This script must be run as root (sudo)${NC}"
-    exit 1
-fi
+# Source common utilities
+source "$(dirname "$0")/utils/common.sh"
 
 # Script directory
-SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+UTILS_DIR="$SCRIPT_DIR/utils"
 
-# Function to display progress
-log() {
-    echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
-}
+# Check if running as root
+check_root
 
 # Function to display warnings
 warn() {
@@ -919,125 +908,618 @@ backup_restore() {
     esac
 }
 
-# Display help menu
+# Function to display help information
 show_help() {
-    cat << EOF
-FreeRADIUS Manager - Management Tool for FreeRADIUS Server
+    echo -e "${BLUE}FreeRADIUS Manager Script${NC} - Management interface for FreeRADIUS server"
+    echo
+    echo -e "Usage: ${GREEN}radius_manager.sh${NC} [command] [options]"
+    echo
+    echo "Commands:"
+    echo "  (no command)   - Launch interactive menu"
+    echo "  status         - Check FreeRADIUS service status"
+    echo "  service        - Manage FreeRADIUS service (start|stop|restart|reload)"
+    echo "  user           - Manage RADIUS users (list|add|delete|test)"
+    echo "  client         - Manage RADIUS clients (list|add|delete)"
+    echo "  database-check - Check PostgreSQL database connection"
+    echo "  logs           - View FreeRADIUS logs"
+    echo "  diagnostics    - Run diagnostics checks"
+    echo "  openvpn-config - Configure OpenVPN integration"
+    echo "  fix            - Fix common issues"
+    echo "  backup         - Back up FreeRADIUS configuration"
+    echo "  restore        - Restore FreeRADIUS configuration"
+    echo "  help           - Show this help information"
+    echo
+    echo "Examples:"
+    echo "  radius_manager.sh                      - Launch interactive menu"
+    echo "  radius_manager.sh status               - Check service status"
+    echo "  radius_manager.sh service restart      - Restart the service"
+    echo "  radius_manager.sh user list            - List all users"
+    echo "  radius_manager.sh user add joe secret  - Add/update a user"
+    echo "  radius_manager.sh logs 50              - Show last 50 log lines"
+}
 
-Usage: sudo bash radius_manager.sh [command] [options]
+# Install/Configure Menu
+install_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}FreeRADIUS Installation & Configuration${NC}"
+    echo
+    
+    # Check if already installed
+    if dpkg -l | grep -q freeradius; then
+        echo -e "${GREEN}FreeRADIUS is already installed.${NC}"
+        
+        echo -e "\n${BOLD}Choose an option:${NC}"
+        echo -e "${CYAN}1)${NC} Run fix script (fix common issues)"
+        echo -e "${CYAN}2)${NC} Configure PostgreSQL integration"
+        echo -e "${CYAN}3)${NC} View current configuration"
+        echo -e "${CYAN}0)${NC} Return to main menu"
+        
+        read -p "Enter your choice [0-3]: " choice
+        
+        case $choice in
+            1)
+                if [ -f "$SCRIPT_DIR/fix_freeradius_install_updated.sh" ]; then
+                    bash "$SCRIPT_DIR/fix_freeradius_install_updated.sh"
+                else
+                    fix_common_issues
+                fi
+                ;;
+            2)
+                if [ -f "$SCRIPT_DIR/radius_postgresql_setup.sh" ]; then
+                    bash "$SCRIPT_DIR/radius_postgresql_setup.sh"
+                else
+                    echo -e "${YELLOW}PostgreSQL setup script not found.${NC}"
+                    echo -e "${YELLOW}Attempting to fix SQL configuration manually...${NC}"
+                    fix_common_issues
+                fi
+                ;;
+            3)
+                config_dir=$(find_freeradius_dir)
+                if [ -n "$config_dir" ]; then
+                    echo -e "\n${YELLOW}Configuration files in $config_dir:${NC}"
+                    ls -la "$config_dir" | grep -E "\.conf$|sites-enabled|mods-enabled"
+                    
+                    echo -e "\n${YELLOW}Enabled virtual hosts:${NC}"
+                    ls -la "$config_dir/sites-enabled"
+                    
+                    echo -e "\n${YELLOW}Enabled modules:${NC}"
+                    ls -la "$config_dir/mods-enabled"
+                fi
+                ;;
+            0|*)
+                main_menu
+                return
+                ;;
+        esac
+    else
+        echo -e "${YELLOW}FreeRADIUS is not installed.${NC}"
+        
+        echo -e "\n${BOLD}Choose an option:${NC}"
+        echo -e "${CYAN}1)${NC} Install FreeRADIUS with default settings"
+        echo -e "${CYAN}2)${NC} Install FreeRADIUS with PostgreSQL"
+        echo -e "${CYAN}0)${NC} Return to main menu"
+        
+        read -p "Enter your choice [0-2]: " choice
+        
+        case $choice in
+            1)
+                if [ -f "$SCRIPT_DIR/install_freeradius.sh" ]; then
+                    bash "$SCRIPT_DIR/install_freeradius.sh"
+                else
+                    echo -e "${RED}Installation script not found.${NC}"
+                    echo -e "Please install FreeRADIUS manually with:"
+                    echo -e "${CYAN}sudo apt update && sudo apt install -y freeradius freeradius-utils${NC}"
+                fi
+                ;;
+            2)
+                if [ -f "$SCRIPT_DIR/install_freeradius.sh" ] && [ -f "$SCRIPT_DIR/radius_postgresql_setup.sh" ]; then
+                    bash "$SCRIPT_DIR/install_freeradius.sh"
+                    bash "$SCRIPT_DIR/radius_postgresql_setup.sh"
+                else
+                    echo -e "${RED}Installation scripts not found.${NC}"
+                    echo -e "Please install FreeRADIUS with PostgreSQL manually with:"
+                    echo -e "${CYAN}sudo apt update && sudo apt install -y freeradius freeradius-utils freeradius-postgresql postgresql${NC}"
+                fi
+                ;;
+            0|*)
+                main_menu
+                return
+                ;;
+        esac
+    fi
+    
+    read -p "Press Enter to continue..."
+    main_menu
+}
 
-Available Commands:
-  status                                Show FreeRADIUS service status
-  service [start|stop|restart|reload]   Manage FreeRADIUS service
-  
-  user list                             List all RADIUS users
-  user add <username> <password> [group] Add/update a RADIUS user
-  user delete <username>                Delete a RADIUS user
-  user test <username> <password>       Test user authentication
-  
-  client list                           List all RADIUS clients
-  client add <name> <ip> <secret> [nastype] Add/update a RADIUS client
-  client delete <name>                  Delete a RADIUS client
-  
-  openvpn-config                        Configure OpenVPN integration
-  
-  database-check                        Check database connection
-  logs [lines]                          View FreeRADIUS logs (default: 20 lines)
-  
-  diagnostics                           Run diagnostics tests
-  fix                                   Fix common issues
-  
-  backup                                Backup configuration and database
-  restore                               Restore from backup
-  
-  help                                  Show this help message
+# User Management Menu
+user_management_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}RADIUS User Management${NC}"
+    echo
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} List all users"
+    echo -e "${CYAN}2)${NC} Add/update user"
+    echo -e "${CYAN}3)${NC} Delete user"
+    echo -e "${CYAN}4)${NC} Test user authentication"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-4]: " choice
+    
+    case $choice in
+        1)
+            manage_users list
+            ;;
+        2)
+            read -p "Enter username: " username
+            read -p "Enter password: " password
+            read -p "Enter group (optional): " group
+            
+            if [ -n "$username" ] && [ -n "$password" ]; then
+                manage_users add "$username" "$password" "$group"
+            else
+                echo -e "${RED}Username and password are required.${NC}"
+            fi
+            ;;
+        3)
+            read -p "Enter username to delete: " username
+            
+            if [ -n "$username" ]; then
+                read -p "Are you sure you want to delete user '$username'? (y/n): " confirm
+                if [[ $confirm =~ ^[Yy]$ ]]; then
+                    manage_users delete "$username"
+                fi
+            else
+                echo -e "${RED}Username is required.${NC}"
+            fi
+            ;;
+        4)
+            read -p "Enter username to test: " username
+            read -p "Enter password: " password
+            
+            if [ -n "$username" ] && [ -n "$password" ]; then
+                manage_users test "$username" "$password"
+            else
+                echo -e "${RED}Username and password are required.${NC}"
+            fi
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    user_management_menu
+}
 
-Examples:
-  sudo bash radius_manager.sh status
-  sudo bash radius_manager.sh user add john password123 vpnusers
-  sudo bash radius_manager.sh client add vpn_server 192.168.1.10 secret123
-  sudo bash radius_manager.sh fix
-EOF
+# Client Management Menu
+client_management_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}RADIUS Client Management${NC}"
+    echo
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} List all clients"
+    echo -e "${CYAN}2)${NC} Add/update client"
+    echo -e "${CYAN}3)${NC} Delete client"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-3]: " choice
+    
+    case $choice in
+        1)
+            manage_clients list
+            ;;
+        2)
+            read -p "Enter client name (shortname): " shortname
+            read -p "Enter client IP address: " ipaddr
+            read -p "Enter shared secret: " secret
+            read -p "Enter NAS type [other]: " nastype
+            nastype=${nastype:-other}
+            
+            if [ -n "$shortname" ] && [ -n "$ipaddr" ] && [ -n "$secret" ]; then
+                manage_clients add "$shortname" "$ipaddr" "$secret" "$nastype"
+            else
+                echo -e "${RED}Client name, IP, and secret are required.${NC}"
+            fi
+            ;;
+        3)
+            read -p "Enter client name to delete: " shortname
+            
+            if [ -n "$shortname" ]; then
+                read -p "Are you sure you want to delete client '$shortname'? (y/n): " confirm
+                if [[ $confirm =~ ^[Yy]$ ]]; then
+                    manage_clients delete "$shortname"
+                fi
+            else
+                echo -e "${RED}Client name is required.${NC}"
+            fi
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    client_management_menu
+}
+
+# Service Management Menu
+service_management_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}FreeRADIUS Service Management${NC}"
+    echo
+    
+    # Display current status
+    if systemctl is-active --quiet freeradius; then
+        echo -e "Current status: ${GREEN}RUNNING${NC}"
+    else
+        echo -e "Current status: ${RED}STOPPED${NC}"
+    fi
+    
+    echo -e "\n${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} Start service"
+    echo -e "${CYAN}2)${NC} Stop service"
+    echo -e "${CYAN}3)${NC} Restart service"
+    echo -e "${CYAN}4)${NC} Reload configuration"
+    echo -e "${CYAN}5)${NC} View detailed status"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-5]: " choice
+    
+    case $choice in
+        1)
+            manage_service start
+            ;;
+        2)
+            manage_service stop
+            ;;
+        3)
+            manage_service restart
+            ;;
+        4)
+            manage_service reload
+            ;;
+        5)
+            systemctl status freeradius --no-pager -l
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    service_management_menu
+}
+
+# OpenVPN Integration Menu
+openvpn_integration_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}OpenVPN Integration${NC}"
+    echo
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} Configure OpenVPN RADIUS authentication"
+    echo -e "${CYAN}2)${NC} Check OpenVPN integration status"
+    echo -e "${CYAN}3)${NC} View integration instructions"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-3]: " choice
+    
+    case $choice in
+        1)
+            configure_openvpn_integration
+            ;;
+        2)
+            # Check OpenVPN integration status
+            echo -e "\n${YELLOW}Checking OpenVPN integration status...${NC}"
+            
+            # Check if RADIUS policy exists
+            config_dir=$(find_freeradius_dir)
+            if [ -n "$config_dir" ]; then
+                if [ -f "$config_dir/policy.d/openvpn" ]; then
+                    echo -e "${GREEN}✓ OpenVPN policy exists${NC}"
+                    grep -A 2 "policy openvpn" "$config_dir/policy.d/openvpn"
+                else
+                    echo -e "${RED}✗ OpenVPN policy is missing${NC}"
+                fi
+                
+                # Check if client is configured
+                if grep -q "client openvpn_server" "$config_dir/clients.conf"; then
+                    echo -e "${GREEN}✓ OpenVPN RADIUS client is configured${NC}"
+                    grep -A 6 "client openvpn_server" "$config_dir/clients.conf"
+                else
+                    echo -e "${RED}✗ OpenVPN RADIUS client is not configured${NC}"
+                fi
+                
+                # Check if policy is referenced in site configuration
+                if [ -f "$config_dir/sites-enabled/default" ] && grep -q "openvpn" "$config_dir/sites-enabled/default"; then
+                    echo -e "${GREEN}✓ OpenVPN policy is referenced in site configuration${NC}"
+                else
+                    echo -e "${RED}✗ OpenVPN policy is not referenced in site configuration${NC}"
+                fi
+            fi
+            
+            # Check OpenVPN configuration
+            if [ -f "/etc/openvpn/server.conf" ]; then
+                echo -e "\n${YELLOW}OpenVPN server configuration:${NC}"
+                if grep -q "radiusplugin.so" /etc/openvpn/server.conf; then
+                    echo -e "${GREEN}✓ RADIUS plugin is configured in OpenVPN${NC}"
+                    grep -A 3 "radiusplugin.so" /etc/openvpn/server.conf
+                else
+                    echo -e "${RED}✗ RADIUS plugin is not configured in OpenVPN${NC}"
+                fi
+            else
+                echo -e "${RED}✗ OpenVPN server.conf not found${NC}"
+            fi
+            ;;
+        3)
+            # View integration instructions
+            config_dir=$(find_freeradius_dir)
+            if [ -n "$config_dir" ] && [ -f "$config_dir/openvpn_radius_config.txt" ]; then
+                echo -e "\n${YELLOW}OpenVPN Integration Instructions:${NC}\n"
+                cat "$config_dir/openvpn_radius_config.txt"
+            else
+                echo -e "${RED}Instructions file not found.${NC}"
+                echo -e "You need to configure OpenVPN integration first."
+            fi
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    openvpn_integration_menu
+}
+
+# Backup & Restore Menu
+backup_restore_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}Backup & Restore${NC}"
+    echo
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} Backup configuration and database"
+    echo -e "${CYAN}2)${NC} Restore from backup"
+    echo -e "${CYAN}3)${NC} List available backups"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-3]: " choice
+    
+    case $choice in
+        1)
+            backup_restore backup
+            ;;
+        2)
+            backup_restore restore
+            ;;
+        3)
+            backup_dir="${SCRIPT_DIR}/backups"
+            echo -e "\n${YELLOW}Available backups:${NC}"
+            ls -lh "$backup_dir"/freeradius-backup-*.tar.gz 2>/dev/null || echo "No backups found."
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    backup_restore_menu
+}
+
+# Diagnostics & Troubleshooting Menu
+diagnostics_menu() {
+    show_header
+    echo -e "${BOLD}${YELLOW}Diagnostics & Troubleshooting${NC}"
+    echo
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo -e "${CYAN}1)${NC} Run full diagnostics"
+    echo -e "${CYAN}2)${NC} View service logs"
+    echo -e "${CYAN}3)${NC} Check database connection"
+    echo -e "${CYAN}4)${NC} Fix common issues"
+    echo -e "${CYAN}5)${NC} Test RADIUS authentication"
+    echo -e "${CYAN}0)${NC} Return to main menu"
+    echo
+    
+    read -p "Enter your choice [0-5]: " choice
+    
+    case $choice in
+        1)
+            run_diagnostics
+            ;;
+        2)
+            echo -e "\n${YELLOW}Showing last 30 log entries:${NC}"
+            view_logs 30
+            ;;
+        3)
+            check_database_connection
+            ;;
+        4)
+            fix_common_issues
+            ;;
+        5)
+            read -p "Enter username to test: " username
+            read -p "Enter password: " password
+            
+            if [ -n "$username" ] && [ -n "$password" ]; then
+                manage_users test "$username" "$password"
+            else
+                echo -e "${RED}Username and password are required.${NC}"
+            fi
+            ;;
+        0|*)
+            main_menu
+            return
+            ;;
+    esac
+    
+    read -p "Press Enter to continue..."
+    diagnostics_menu
+}
+
+# Function to render the main menu
+main_menu() {
+    show_header
+    
+    # Display status summary if FreeRADIUS is installed
+    if command_exists freeradius || dpkg -l | grep -q freeradius; then
+        echo -e "${YELLOW}FreeRADIUS Status:${NC}"
+        if systemctl is-active --quiet freeradius; then
+            echo -e "${GREEN}● Service: Running${NC}"
+        else
+            echo -e "${RED}● Service: Stopped${NC}"
+        fi
+        echo
+    fi
+    
+    echo -e "${BOLD}Choose an option:${NC}"
+    echo
+    echo -e "${CYAN}1)${NC} Install/Configure FreeRADIUS"
+    echo -e "${CYAN}2)${NC} Manage Users"
+    echo -e "${CYAN}3)${NC} Manage RADIUS Clients"
+    echo -e "${CYAN}4)${NC} Service Management"
+    echo -e "${CYAN}5)${NC} OpenVPN Integration"
+    echo -e "${CYAN}6)${NC} View Logs"
+    echo -e "${CYAN}7)${NC} Backup & Restore"
+    echo -e "${CYAN}8)${NC} Diagnostics & Troubleshooting"
+    echo -e "${CYAN}0)${NC} Exit"
+    echo
+    
+    read -p "Enter your choice [0-8]: " choice
+    
+    case $choice in
+        1)
+            install_menu
+            ;;
+        2)
+            user_management_menu
+            ;;
+        3)
+            client_management_menu
+            ;;
+        4)
+            service_management_menu
+            ;;
+        5)
+            openvpn_integration_menu
+            ;;
+        6)
+            view_logs
+            ;;
+        7)
+            backup_restore_menu
+            ;;
+        8)
+            diagnostics_menu
+            ;;
+        0)
+            echo -e "${GREEN}Exiting. Goodbye!${NC}"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Invalid option. Press Enter to continue...${NC}"
+            read
+            main_menu
+            ;;
+    esac
 }
 
 # Main function
 main() {
+    # Support both interactive and command-line usage
     if [ $# -eq 0 ]; then
-        show_help
-        exit 0
-    fi
-    
-    # Check if FreeRADIUS is installed
-    if ! check_freeradius_installed && [ "$1" != "help" ]; then
-        error "FreeRADIUS is not installed. Please run the installation script first."
-        exit 1
-    fi
-    
-    # Parse arguments
-    case "$1" in
-        status)
-            check_freeradius_status
-            ;;
-        service)
-            if [ $# -lt 2 ]; then
-                error "Missing service action."
-                echo "Usage: radius_manager.sh service [start|stop|restart|reload]"
-                exit 1
-            fi
-            manage_service "$2"
-            ;;
-        user)
-            if [ $# -lt 2 ]; then
-                error "Missing user action."
-                echo "Usage: radius_manager.sh user [list|add|delete|test] [options]"
-                exit 1
-            fi
-            shift
-            manage_users "$@"
-            ;;
-        client)
-            if [ $# -lt 2 ]; then
-                error "Missing client action."
-                echo "Usage: radius_manager.sh client [list|add|delete] [options]"
-                exit 1
-            fi
-            shift
-            manage_clients "$@"
-            ;;
-        database-check)
-            check_database_connection
-            ;;
-        logs)
-            if [ $# -gt 1 ]; then
-                view_logs "$2"
-            else
-                view_logs
-            fi
-            ;;
-        diagnostics)
-            run_diagnostics
-            ;;
-        openvpn-config)
-            configure_openvpn_integration
-            ;;
-        fix)
-            fix_common_issues
-            ;;
-        backup)
-            backup_restore "backup"
-            ;;
-        restore)
-            backup_restore "restore"
-            ;;
-        help)
-            show_help
-            ;;
-        *)
-            error "Unknown command: $1"
-            show_help
+        # No arguments - run in interactive mode
+        main_menu
+    else
+        # Command-line arguments provided
+        # Check if FreeRADIUS is installed for most commands
+        if ! check_freeradius_installed && [ "$1" != "help" ] && [ "$1" != "install" ]; then
+            error "FreeRADIUS is not installed. Please run the installation script first."
             exit 1
-            ;;
-    esac
+        fi
+        
+        # Parse arguments
+        case "$1" in
+            status)
+                check_freeradius_status
+                ;;
+            service)
+                if [ $# -lt 2 ]; then
+                    error "Missing service action."
+                    echo "Usage: radius_manager.sh service [start|stop|restart|reload]"
+                    exit 1
+                fi
+                manage_service "$2"
+                ;;
+            user)
+                if [ $# -lt 2 ]; then
+                    error "Missing user action."
+                    echo "Usage: radius_manager.sh user [list|add|delete|test] [options]"
+                    exit 1
+                fi
+                shift
+                manage_users "$@"
+                ;;
+            client)
+                if [ $# -lt 2 ]; then
+                    error "Missing client action."
+                    echo "Usage: radius_manager.sh client [list|add|delete] [options]"
+                    exit 1
+                fi
+                shift
+                manage_clients "$@"
+                ;;
+            database-check)
+                check_database_connection
+                ;;
+            logs)
+                if [ $# -gt 1 ]; then
+                    view_logs "$2"
+                else
+                    view_logs
+                fi
+                ;;
+            diagnostics)
+                run_diagnostics
+                ;;
+            openvpn-config)
+                configure_openvpn_integration
+                ;;
+            fix)
+                fix_common_issues
+                ;;
+            backup)
+                backup_restore "backup"
+                ;;
+            restore)
+                backup_restore "restore"
+                ;;
+            install)
+                install_menu
+                ;;
+            help)
+                show_help
+                ;;
+            *)
+                error "Unknown command: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    fi
 }
 
 # Run main function with all arguments

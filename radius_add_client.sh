@@ -23,6 +23,52 @@ IPADDR=$2
 SECRET=$3
 NASTYPE=${4:-"other"}  # Default NAS type is "other" if not specified
 
+# Check if clients.conf exists
+CLIENTS_CONF="/etc/freeradius/3.0/clients.conf"
+if [ ! -f "$CLIENTS_CONF" ]; then
+    echo "Error: FreeRADIUS clients.conf not found at $CLIENTS_CONF"
+    echo "Make sure FreeRADIUS is correctly installed."
+    exit 1
+fi
+
+# Check if client already exists
+if grep -q "client $SHORTNAME {" "$CLIENTS_CONF"; then
+    echo "Warning: Client '$SHORTNAME' already exists in clients.conf"
+    echo "Updating existing client configuration..."
+    # Remove existing client config
+    sed -i "/client $SHORTNAME {/,/}/d" "$CLIENTS_CONF"
+fi
+
+# Add new client to clients.conf
+echo "Adding client '$SHORTNAME' ($IPADDR) to FreeRADIUS configuration..."
+cat >> "$CLIENTS_CONF" << EOF
+
+client $SHORTNAME {
+    ipaddr = $IPADDR
+    secret = $SECRET
+    shortname = $SHORTNAME
+    nastype = $NASTYPE
+    require_message_authenticator = no
+}
+EOF
+
+# Set proper permissions
+chown freerad:freerad "$CLIENTS_CONF" 2>/dev/null || true
+chmod 640 "$CLIENTS_CONF" 2>/dev/null || true
+
+# Restart FreeRADIUS to apply changes
+echo "Restarting FreeRADIUS service to apply changes..."
+if systemctl is-active --quiet freeradius; then
+    systemctl restart freeradius
+    echo "FreeRADIUS restarted successfully."
+else
+    echo "Warning: FreeRADIUS service is not running."
+    echo "You need to start it with: sudo systemctl start freeradius"
+fi
+
+echo "Client '$SHORTNAME' added successfully."
+NASTYPE=${4:-"other"}  # Default NAS type is "other" if not specified
+
 echo "==============================================="
 echo "Adding RADIUS client: $SHORTNAME ($IPADDR)"
 echo "==============================================="
