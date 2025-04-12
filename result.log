@@ -1,180 +1,119 @@
-sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./install_freeradius.sh
-===============================================
-FreeRADIUS Server Installation
-===============================================
-[2025-04-13 03:24:37] Updating system packages...
-[2025-04-13 03:24:42] Fixing any broken packages...
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-0 upgraded, 0 newly installed, 0 to remove and 284 not upgraded.
-[2025-04-13 03:24:44] Removing any previous failed FreeRADIUS installation...
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-Package 'freeradius' is not installed, so not removed
-Package 'freeradius-utils' is not installed, so not removed
-Package 'freeradius-postgresql' is not installed, so not removed
-0 upgraded, 0 newly installed, 0 to remove and 284 not upgraded.
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-0 upgraded, 0 newly installed, 0 to remove and 284 not upgraded.
-[2025-04-13 03:24:48] Installing FreeRADIUS and related packages...
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-postgresql is already the newest version (14+238).
-postgresql-client is already the newest version (14+238).
-The following additional packages will be installed:
-  freeradius-common freeradius-config freetds-common libct4 libdbi-perl libfreeradius3 libtalloc2 libtevent0 libwbclient0
-Suggested packages:
-  freeradius-krb5 freeradius-ldap freeradius-mysql freeradius-python3 snmp libclone-perl libmldbm-perl libnet-daemon-perl libsql-statement-perl
-The following NEW packages will be installed:
-  freeradius freeradius-common freeradius-config freeradius-postgresql freeradius-utils freetds-common libct4 libdbi-perl libfreeradius3 libtalloc2
-  libtevent0 libwbclient0
-0 upgraded, 12 newly installed, 0 to remove and 284 not upgraded.
-Need to get 0 B/2,658 kB of archives.
-After this operation, 9,615 kB of additional disk space will be used.
-Selecting previously unselected package libtalloc2:amd64.
-(Reading database ... 126527 files and directories currently installed.)
-Preparing to unpack .../00-libtalloc2_2.3.3-2build1_amd64.deb ...
-Unpacking libtalloc2:amd64 (2.3.3-2build1) ...
-Selecting previously unselected package libtevent0:amd64.
-Preparing to unpack .../01-libtevent0_0.11.0-1build1_amd64.deb ...
-Unpacking libtevent0:amd64 (0.11.0-1build1) ...
-Selecting previously unselected package libwbclient0:amd64.
-Preparing to unpack .../02-libwbclient0_2%3a4.15.13+dfsg-0ubuntu1.6_amd64.deb ...
-Unpacking libwbclient0:amd64 (2:4.15.13+dfsg-0ubuntu1.6) ...
-Selecting previously unselected package freeradius-common.
-Preparing to unpack .../03-freeradius-common_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_all.deb ...
-Unpacking freeradius-common (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package freeradius-config.
-Preparing to unpack .../04-freeradius-config_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_amd64.deb ...
-Unpacking freeradius-config (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package libfreeradius3.
-Preparing to unpack .../05-libfreeradius3_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_amd64.deb ...
-Unpacking libfreeradius3 (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package freetds-common.
-Preparing to unpack .../06-freetds-common_1.3.6-1_all.deb ...
-Unpacking freetds-common (1.3.6-1) ...
-Selecting previously unselected package libct4:amd64.
-Preparing to unpack .../07-libct4_1.3.6-1_amd64.deb ...
-Unpacking libct4:amd64 (1.3.6-1) ...
-Selecting previously unselected package freeradius.
-Preparing to unpack .../08-freeradius_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_amd64.deb ...
-Unpacking freeradius (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package freeradius-postgresql.
-Preparing to unpack .../09-freeradius-postgresql_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_amd64.deb ...
-Unpacking freeradius-postgresql (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package freeradius-utils.
-Preparing to unpack .../10-freeradius-utils_3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4_amd64.deb ...
-Unpacking freeradius-utils (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Selecting previously unselected package libdbi-perl:amd64.
-Preparing to unpack .../11-libdbi-perl_1.643-3build3_amd64.deb ...
-Unpacking libdbi-perl:amd64 (1.643-3build3) ...
-Setting up libtalloc2:amd64 (2.3.3-2build1) ...
-Setting up libtevent0:amd64 (0.11.0-1build1) ...
-Setting up freeradius-common (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Setting up freetds-common (1.3.6-1) ...
-Setting up libdbi-perl:amd64 (1.643-3build3) ...
-Setting up libfreeradius3 (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Setting up libwbclient0:amd64 (2:4.15.13+dfsg-0ubuntu1.6) ...
-Setting up libct4:amd64 (1.3.6-1) ...
-Setting up freeradius-config (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Setting up freeradius (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-update-rc.d: warning: start and stop actions are no longer supported; falling back to defaults
-Job for freeradius.service failed because the control process exited with error code.
-See "systemctl status freeradius.service" and "journalctl -xeu freeradius.service" for details.
-invoke-rc.d: initscript freeradius, action "start" failed.
-● freeradius.service - FreeRADIUS multi-protocol policy server
-     Loaded: loaded (/lib/systemd/system/freeradius.service; disabled; vendor preset: enabled)
-     Active: activating (auto-restart) (Result: exit-code) since Sun 2025-04-13 03:24:54 IST; 36ms ago
-       Docs: man:radiusd(8)
-             man:radiusd.conf(5)
-             http://wiki.freeradius.org/
-             http://networkradius.com/doc/
-    Process: 11449 ExecStartPre=/usr/sbin/freeradius $FREERADIUS_OPTIONS -Cx -lstdout (code=exited, status=1/FAILURE)
-        CPU: 196ms
-Created symlink /etc/systemd/system/multi-user.target.wants/freeradius.service → /lib/systemd/system/freeradius.service.
-Setting up freeradius-postgresql (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-freeradius.service is not active, cannot reload.
-invoke-rc.d: initscript freeradius, action "force-reload" failed.
-Setting up freeradius-utils (3.0.26~dfsg~git20220223.1.00ed0241fa-0ubuntu3.4) ...
-Processing triggers for man-db (2.10.2-1) ...
-Processing triggers for libc-bin (2.35-0ubuntu3.1) ...
-NEEDRESTART-VER: 3.5
-NEEDRESTART-KCUR: 5.15.0-46-generic
-NEEDRESTART-KEXP: 5.15.0-46-generic
-NEEDRESTART-KSTA: 1
-[2025-04-13 03:25:13] Ensuring directory structure exists...
-[2025-04-13 03:25:13] Creating backup of original configuration...
-[2025-04-13 03:25:13] Creating directory structure...
-mkdir: cannot create directory ‘/etc/freeradius/3.0/users’: File exists
-[2025-04-13 03:25:13] Creating new clients.conf file...
-[2025-04-13 03:25:13] Setting file permissions...
-[2025-04-13 03:25:13] Setting up PostgreSQL database for FreeRADIUS...
-Synchronizing state of postgresql.service with SysV service script with /lib/systemd/systemd-sysv-install.
-Executing: /lib/systemd/systemd-sysv-install enable postgresql
-[2025-04-13 03:25:16] PostgreSQL user 'radius' already exists.
-[2025-04-13 03:25:16] PostgreSQL database 'radius' already exists.
-[2025-04-13 03:25:16] Checking if database schema exists...
-[2025-04-13 03:25:16] Database schema already exists. Skipping import.
-[2025-04-13 03:25:16] Configuring PostgreSQL authentication (pg_hba.conf)...
-[2025-04-13 03:25:16] PostgreSQL hba configuration file: /etc/postgresql/14/main/pg_hba.conf
-[2025-04-13 03:25:16] Granting necessary permissions to radius user...
-GRANT
-GRANT
-GRANT
-GRANT
-[2025-04-13 03:25:17] Configuring FreeRADIUS to use PostgreSQL...
-./install_freeradius.sh: line 251: /etc/freeradius/3.0/mods-available/sql: No such file or directory
-[2025-04-13 03:25:17] Enabling SQL module...
-./install_freeradius.sh: line 301: cd: /etc/freeradius/3.0/mods-enabled: No such file or directory
-[2025-04-13 03:25:17] Updating site configuration to use SQL throughout authentication process...
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/default: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/default: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-grep: /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-sed: can't read /etc/freeradius/3.0/sites-available/inner-tunnel: No such file or directory
-[2025-04-13 03:25:17] Configuring default RADIUS clients...
-[2025-04-13 03:25:17] Creating a test user...
-mkdir: cannot create directory ‘/etc/freeradius/3.0/users’: File exists
-[2025-04-13 03:25:17] Using alternate users file location
-./install_freeradius.sh: line 392: /etc/freeradius/3.0/users/testuser: Not a directory
-[2025-04-13 03:25:17] Optimizing RADIUS configuration for your hardware...
-sed: can't read /etc/freeradius/3.0/radiusd.conf: No such file or directory
-sed: can't read /etc/freeradius/3.0/radiusd.conf: No such file or directory
-sed: can't read /etc/freeradius/3.0/radiusd.conf: No such file or directory
-[2025-04-13 03:25:17] Updating log settings...
-[2025-04-13 03:25:17] Restarting FreeRADIUS service...
-Job for freeradius.service failed because the control process exited with error code.
-See "systemctl status freeradius.service" and "journalctl -xeu freeradius.service" for details.
-[2025-04-13 03:25:17] ERROR: FreeRADIUS service failed to start. Check /var/log/syslog for errors.
-● freeradius.service - FreeRADIUS multi-protocol policy server
-     Loaded: loaded (/lib/systemd/system/freeradius.service; enabled; vendor preset: enabled)
-     Active: activating (auto-restart) (Result: exit-code) since Sun 2025-04-13 03:25:17 IST; 48ms ago
-       Docs: man:radiusd(8)
-             man:radiusd.conf(5)
-             http://wiki.freeradius.org/
-             http://networkradius.com/doc/
-    Process: 11978 ExecStartPre=/usr/sbin/freeradius $FREERADIUS_OPTIONS -Cx -lstdout (code=exited, status=1/FAILURE)
-        CPU: 193ms
+including configuration file /etc/freeradius/3.0/sites-enabled/inner-tunnel
+including configuration file /etc/freeradius/3.0/sites-enabled/default
+main {
+ security {
+        user = "freerad"
+        group = "freerad"
+        allow_core_dumps = no
+ }
+        name = "freeradius"
+        prefix = "/usr"
+        localstatedir = "/var"
+        logdir = "/var/log/freeradius"
+        run_dir = "/var/run/freeradius"
+}
+main {
+        name = "freeradius"
+        prefix = "/usr"
+        localstatedir = "/var"
+        sbindir = "/usr/sbin"
+        logdir = "/var/log/freeradius"
+        run_dir = "/var/run/freeradius"
+        libdir = "/usr/lib/freeradius"
+        radacctdir = "/var/log/freeradius/radacct"
+        hostname_lookups = no
+        max_request_time = 30
+        cleanup_delay = 5
+        max_requests = 16384
+        postauth_client_lost = no
+        pidfile = "/var/run/freeradius/freeradius.pid"
+        checkrad = "/usr/sbin/checkrad"
+        debug_level = 0
+        proxy_requests = yes
+ log {
+        stripped_names = no
+        auth = no
+        auth_badpass = no
+        auth_goodpass = no
+        colourise = yes
+        msg_denied = "You are already logged in - access denied"
+ }
+ resources {
+ }
+ security {
+        max_attributes = 200
+        reject_delay = 1.000000
+        status_server = yes
+        require_message_authenticator = "auto"
+        limit_proxy_state = "auto"
+ }
+}
+radiusd: #### Loading Realms and Home Servers ####
+ proxy server {
+        retry_delay = 5
+        retry_count = 3
+        default_fallback = no
+        dead_time = 120
+        wake_all_if_all_dead = no
+ }
+ home_server localhost {
+        ipaddr = 127.0.0.1
+        port = 1812
+        type = "auth"
+        secret = <<< secret >>>
+        response_window = 20.000000
+        response_timeouts = 1
+        max_outstanding = 65536
+        zombie_period = 40
+        status_check = "status-server"
+        ping_interval = 30
+        check_interval = 30
+        check_timeout = 4
+        num_answers_to_alive = 3
+        revive_interval = 120
+  limit {
+        max_connections = 16
+        max_requests = 0
+        lifetime = 0
+        idle_timeout = 0
+  }
+  coa {
+        irt = 2
+        mrt = 16
+        mrc = 5
+        mrd = 30
+  }
+ }
+ home_server_pool my_auth_failover {
+        type = fail-over
+        home_server = localhost
+ }
+ realm example.com {
+        auth_pool = my_auth_failover
+ }
+ realm LOCAL {
+ }
+radiusd: #### Loading Clients ####
+ client localhost {
+        ipaddr = 127.0.0.1
+        secret = <<< secret >>>
+        shortname = "localhost"
+  limit {
+        max_connections = 16
+        lifetime = 0
+        idle_timeout = 30
+  }
+ }
+ client openvpn_server {
+        ipaddr = 127.0.0.1
+        secret = <<< secret >>>
+        shortname = "openvpn"
+  limit {
+        max_connections = 16
+        lifetime = 0
+        idle_timeout = 30
+  }
+ }
+Failed to add duplicate client openvpn
+/etc/freeradius/3.0/clients.conf[10]: Failed to add client openvpn_server
 sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
