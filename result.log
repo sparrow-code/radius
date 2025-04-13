@@ -1,0 +1,172 @@
+==== PostgreSQL Configuration ====
+
+[2025-04-13 05:26:52] Starting PostgreSQL service...
+Synchronizing state of postgresql.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable postgresql
+[2025-04-13 05:26:57] PostgreSQL user 'radius' already exists.
+[2025-04-13 05:26:57] Database 'radius' already exists.
+[2025-04-13 05:26:57] Database schema already exists. Skipping import.
+[2025-04-13 05:26:57] Configuring PostgreSQL authentication...
+[2025-04-13 05:26:57] PostgreSQL hba configuration file: /etc/postgresql/14/main/pg_hba.conf
+[2025-04-13 05:26:57] Granting necessary permissions to radius user...
+GRANT
+GRANT
+GRANT
+/home/sdworlld/isp/radius/modules/install.sh: line 271: configure_sql_module: command not found
+[2025-04-13 05:26:58] Creating directory structure...
+[2025-04-13 05:26:58] Setting file permissions...
+chown: cannot access '/var/log/radius/': No such file or directory
+/home/sdworlld/isp/radius/modules/install.sh: line 59: configure_main_settings: command not found
+/home/sdworlld/isp/radius/modules/install.sh: line 62: configure_default_clients: command not found
+/home/sdworlld/isp/radius/modules/install.sh: line 65: create_test_user: command not found
+/home/sdworlld/isp/radius/modules/install.sh: line 68: configure_firewall: command not found
+[2025-04-13 05:26:59] Starting FreeRADIUS service...
+Synchronizing state of freeradius.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable freeradius
+[2025-04-13 05:27:03] FreeRADIUS service started successfully!
+/home/sdworlld/isp/radius/modules/install.sh: line 78: display_installation_summary: command not found
+
+
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./radius.sh menu
+/home/sdworlld/isp/radius/modules/install.sh: line 351: syntax error near unexpected token `}'
+/home/sdworlld/isp/radius/modules/install.sh: line 351: `        }'
+./radius.sh: line 129: launch_menu: command not found
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
+
+
+
+[2025-04-13 16:01:32] Testing user authentication: testuser
+Sent Access-Request Id 146 from 0.0.0.0:38178 to 127.0.0.1:1812 length 78
+        User-Name = "testuser"
+        User-Password = "password"
+        NAS-IP-Address = 127.0.0.1
+        NAS-Port = 0
+        Cleartext-Password = "password"
+Received Access-Reject Id 146 from 127.0.0.1:1812 to 127.0.0.1:38178 length 38
+        Message-Authenticator = 0xc347b60989652c1961cf74834745ce09
+(0) -: Expected Access-Accept got Access-Reject
+[2025-04-13 16:01:33] ERROR: Authentication test failed for user testuser!
+Press Enter to continue...
+
+
+
+
+
+Choose an option:
+1) Start service
+2) Stop service
+3) Restart service
+4) Reload configuration
+5) View detailed status
+0) Return to main menu
+
+Enter your choice [0-5]: 3
+
+=== FreeRADIUS Service Management ===
+
+[2025-04-13 16:02:14] Restarting FreeRADIUS service...
+
+=== FreeRADIUS Service Status ===
+
+Status: ACTIVE
+     Active: active (running) since Sun 2025-04-13 16:02:16 IST; 2s ago
+   Main PID: 37235 (freeradius)
+      Tasks: 6 (limit: 4575)
+
+Port Status:
+udp   UNCONN 0      0          127.0.0.1:18120      0.0.0.0:*
+udp   UNCONN 0      0            0.0.0.0:1812       0.0.0.0:*
+udp   UNCONN 0      0            0.0.0.0:1813       0.0.0.0:*
+udp   UNCONN 0      0               [::]:1812          [::]:*
+udp   UNCONN 0      0               [::]:1813          [::]:*
+Press Enter to continue...
+
+
+1) Start service
+2) Stop service
+3) Restart service
+4) Reload configuration
+5) View detailed status
+0) Return to main menu
+
+Enter your choice [0-5]: 5
+● freeradius.service - FreeRADIUS multi-protocol policy server
+     Loaded: loaded (/lib/systemd/system/freeradius.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2025-04-13 16:02:16 IST; 30s ago
+       Docs: man:radiusd(8)
+             man:radiusd.conf(5)
+             http://wiki.freeradius.org/
+             http://networkradius.com/doc/
+    Process: 37234 ExecStartPre=/usr/sbin/freeradius $FREERADIUS_OPTIONS -Cx -lstdout (code=exited, status=0/SUCCESS)
+   Main PID: 37235 (freeradius)
+     Status: "Processing requests"
+      Tasks: 6 (limit: 4575)
+     Memory: 78.7M (limit: 2.0G)
+        CPU: 1.326s
+     CGroup: /system.slice/freeradius.service
+             └─37235 /usr/sbin/freeradius -f
+
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type PAP for attr Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type CHAP for attr Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type MS-CHAP for attr Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Autz-Type New-TLS-Connection for attr Autz-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type REJECT for attr Post-Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type Challenge for attr Post-Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type Client-Lost for attr Post-Auth-Type
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: radiusd: #### Skipping IP addresses and Ports ####
+Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Configuration appears to be OK
+Apr 13 16:02:16 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Started FreeRADIUS multi-protocol policy server.
+
+
+OpenVPN Integration
+
+Choose an option:
+1) Configure OpenVPN RADIUS authentication
+2) Check OpenVPN integration status
+3) View integration instructions
+0) Return to main menu
+
+Enter your choice [0-3]: 2
+
+Checking OpenVPN integration status...
+✗ OpenVPN policy is missing
+✗ OpenVPN RADIUS client is not configured
+✗ OpenVPN policy is not referenced in site configuration
+
+OpenVPN server configuration:
+✗ RADIUS plugin is not configured in OpenVPN
+Press Enter to continue...
+
+
+
+
+OpenVPN Integration
+
+Choose an option:
+1) Configure OpenVPN RADIUS authentication
+2) Check OpenVPN integration status
+3) View integration instructions
+0) Return to main menu
+
+Enter your choice [0-3]: 1
+
+=== OpenVPN Integration ===
+
+Detected OpenVPN IP: 10.8.0.1
+Use this IP? [Y/n]: Y
+Enter shared secret for RADIUS-OpenVPN [vpn_radius_secret]:
+[2025-04-13 16:10:12] OpenVPN configuration script not found. Manually configuring...
+[2025-04-13 16:10:12] Updating clients.conf for OpenVPN...
+[2025-04-13 16:10:12] Adding OpenVPN server as RADIUS client...
+[2025-04-13 16:10:12] OpenVPN RADIUS client configuration updated.
+[2025-04-13 16:10:12] Creating OpenVPN policy...
+[2025-04-13 16:10:12] Updating site configuration...
+[2025-04-13 16:10:12] Creating OpenVPN configuration instructions...
+[2025-04-13 16:10:12] OpenVPN integration configured. Instructions saved to:
+/etc/freeradius/3.0/openvpn_radius_config.txt
+Job for freeradius.service failed because the control process exited with error code.
+See "systemctl status freeradius.service" and "journalctl -xeu freeradius.service" for details.
+[2025-04-13 16:10:12] ERROR: FreeRADIUS failed to restart. Check logs for details.
+Press Enter to continue...
+
+

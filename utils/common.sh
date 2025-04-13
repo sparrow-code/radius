@@ -46,19 +46,32 @@ check_root() {
 
 # Function to find FreeRADIUS configuration directory
 find_freeradius_dir() {
-    local config_dir=$(find /etc -type d -name "freeradius" -o -name "raddb" 2>/dev/null | head -n1)
+    # Check common locations
+    local locations=(
+        "/etc/freeradius/3.0"
+        "/etc/freeradius"
+        "/etc/raddb"
+    )
+    
+    local config_dir=""
+    for dir in "${locations[@]}"; do
+        if [ -d "$dir" ]; then
+            config_dir="$dir"
+            break
+        fi
+    done
+    
+    # If not found in common locations, try to find it
     if [ -z "$config_dir" ]; then
-        error "Cannot find FreeRADIUS configuration directory."
-        return 1
+        config_dir=$(find /etc -type d -name "freeradius" -o -name "raddb" 2>/dev/null | head -n1)
+        
+        # Check for version 3 directory
+        if [ -d "$config_dir/3.0" ]; then
+            config_dir="$config_dir/3.0"
+        fi
     fi
     
-    # Check for version 3 directory
-    if [ -d "$config_dir/3.0" ]; then
-        echo "$config_dir/3.0"
-    else
-        echo "$config_dir"
-    fi
-    return 0
+    echo "$config_dir"
 }
 
 # Function to check if FreeRADIUS is installed
@@ -84,31 +97,7 @@ show_header() {
     echo
 }
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" &> /dev/null
-}
-
-# Find FreeRADIUS configuration directory
-find_freeradius_dir() {
-    local config_dir=""
-    
-    # Common locations to check
-    local locations=(
-        "/etc/freeradius/3.0"
-        "/etc/freeradius"
-        "/etc/raddb"
-    )
-    
-    for dir in "${locations[@]}"; do
-        if [ -d "$dir" ]; then
-            config_dir="$dir"
-            break
-        fi
-    done
-    
-    echo "$config_dir"
-}
+# Function to check if a command exists (removed duplicate)
 
 # Check FreeRADIUS service status
 check_freeradius_status() {

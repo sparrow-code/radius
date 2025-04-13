@@ -55,17 +55,38 @@ install_freeradius() {
     # Create directory structure
     create_directory_structure
     
-    # Configure radiusd.conf
-    configure_main_settings
+    # Configure SQL module if that function exists and PostgreSQL is in use
+    if [[ "$db_type" == "postgresql" ]] && type configure_sql_module &>/dev/null; then
+        configure_sql_module
+    fi
     
-    # Configure clients.conf
-    configure_default_clients
+    # Configure radiusd.conf if function exists
+    if type configure_main_settings &>/dev/null; then
+        configure_main_settings
+    else
+        log "Skipping main settings configuration (function not available)"
+    fi
     
-    # Create test user
-    create_test_user
+    # Configure clients.conf if function exists
+    if type configure_default_clients &>/dev/null; then
+        configure_default_clients
+    else
+        log "Skipping default clients configuration (function not available)"
+    fi
     
-    # Configure firewall
-    configure_firewall
+    # Create test user if function exists
+    if type create_test_user &>/dev/null; then
+        create_test_user
+    else
+        log "Skipping test user creation (function not available)"
+    fi
+    
+    # Configure firewall if function exists
+    if type configure_firewall &>/dev/null; then
+        configure_firewall
+    else
+        log "Skipping firewall configuration (function not available)"
+    fi
     
     # Enable and start the service
     log "Starting FreeRADIUS service..."
@@ -90,6 +111,9 @@ install_freeradius() {
 create_directory_structure() {
     log "Creating directory structure..."
     
+    # Ensure log directory exists with proper permissions first
+    mkdir -p /var/log/radius/
+    
     local radius_dir=$(find_freeradius_dir)
     if [ -z "$radius_dir" ]; then
         # Create directories if they don't exist
@@ -97,7 +121,6 @@ create_directory_structure() {
         mkdir -p /etc/freeradius/3.0/users
         mkdir -p /etc/freeradius/3.0/policy.d
         mkdir -p /etc/freeradius/3.0/radiusd.conf.d
-        mkdir -p /var/log/radius/
         
         radius_dir="/etc/freeradius/3.0"
     fi
