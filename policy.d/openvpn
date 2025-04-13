@@ -12,9 +12,11 @@ policy openvpn {
         update control {
             Auth-Type := PAP
         }
-        ok
+        ok    
     } else {
         # Invalid username format
-        reject { "Invalid username format" }
+        reject {
+            &reply-message = "Invalid username format"
+        }
     }
 }

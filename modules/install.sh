@@ -371,7 +371,7 @@ EOF
         if [ ! -f "$site_file" ]; then
             warn "Site file not found: $site_file"
             return 1
-        }
+        fi
         
         # Update authorize section
         if ! grep -q "^[[:space:]]*sql$" "$site_file"; then
