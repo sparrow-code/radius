@@ -1,64 +1,52 @@
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE radius TO radius;"
+could not change directory to "/home/sdworlld/isp/radius": Permission denied
+GRANT
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
+
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO radius;" radius
+could not change directory to "/home/sdworlld/isp/radius": Permission denied
+GRANT
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
+
+
+
 sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./radius.sh fix
 /home/sdworlld/isp/radius/modules/install.sh: line 374: syntax error near unexpected token `}'
 /home/sdworlld/isp/radius/modules/install.sh: line 374: `        }'
 
 ==== Fixing Common Issues ====
 
-[2025-04-13 16:18:48] Checking for common issues...
-[2025-04-13 16:18:48] Fixing directory permissions...
-[2025-04-13 16:18:48] Checking OpenVPN policy syntax...
-[2025-04-13 16:18:48] Restarting FreeRADIUS service...
+[2025-04-13 16:35:51] Checking for common issues...
+[2025-04-13 16:35:51] Fixing directory permissions...
+[2025-04-13 16:35:51] Checking OpenVPN policy syntax...
+[2025-04-13 16:35:51] Restarting FreeRADIUS service...
 Job for freeradius.service failed because the control process exited with error code.
 See "systemctl status freeradius.service" and "journalctl -xeu freeradius.service" for details.
-[2025-04-13 16:18:51] ERROR: FreeRADIUS service failed to start.
-Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37859]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
-Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37859]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
-Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
-Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
-Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
-Apr 13 16:18:48 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Stopped FreeRADIUS multi-protocol policy server.
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Starting FreeRADIUS multi-protocol policy server...
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: FreeRADIUS Version 3.0.26
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Copyright (C) 1999-2021 The FreeRADIUS server project and contributors
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: PARTICULAR PURPOSE
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: You may redistribute copies of FreeRADIUS under the terms of the
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: GNU General Public License
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: For more information about these matters, see the file named COPYRIGHT
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Starting - reading configuration files ...
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
-Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
+[2025-04-13 16:35:54] ERROR: FreeRADIUS service failed to start.
+Apr 13 16:21:23 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38390]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
+Apr 13 16:21:23 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38390]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
+Apr 13 16:21:23 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
+Apr 13 16:21:23 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
+Apr 13 16:21:23 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
+Apr 13 16:21:24 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Stopped FreeRADIUS multi-protocol policy server.
+Apr 13 16:35:53 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Starting FreeRADIUS multi-protocol policy server...
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: FreeRADIUS Version 3.0.26
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: Copyright (C) 1999-2021 The FreeRADIUS server project and contributors
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: PARTICULAR PURPOSE
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: You may redistribute copies of FreeRADIUS under the terms of the
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: GNU General Public License
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: For more information about these matters, see the file named COPYRIGHT
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: Starting - reading configuration files ...
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38916]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
+Apr 13 16:35:54 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
 sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
 
 
 
-
-sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./radius.sh user add testuser password vpnusers
-/home/sdworlld/isp/radius/modules/install.sh: line 374: syntax error near unexpected token `}'
-/home/sdworlld/isp/radius/modules/install.sh: line 374: `        }'
-
-==== Add/Update User ====
-
-[2025-04-13 16:19:32] Processing user: testuser
-[2025-04-13 16:19:32] Using PostgreSQL database...
-[2025-04-13 16:19:33] User already exists. Updating password...
-UPDATE 1
-[2025-04-13 16:19:33] Adding user to group: vpnusers
-[2025-04-13 16:19:33] Group vpnusers does not exist. Creating group...
-INSERT 0 1
-DELETE 0
-INSERT 0 1
-[2025-04-13 16:19:33] User testuser has been added/updated successfully!
-sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
-
-
-
-
-
-sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo systemctl stop freeradius
 sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo freeradius -X
 FreeRADIUS Version 3.0.26
 Copyright (C) 1999-2021 The FreeRADIUS server project and contributors
@@ -117,5 +105,10 @@ including configuration file /etc/freeradius/3.0/policy.d/cui
 including configuration file /etc/freeradius/3.0/policy.d/openvpn
 /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
 Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
 
 
+
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ psql
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "sdworlld" does not exist
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
