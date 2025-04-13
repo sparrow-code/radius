@@ -65,7 +65,7 @@ show_help() {
 
 # Function to launch the interactive menu
 launch_menu() {
-    # Source the radius_manager.sh script which contains the main_menu function
+    # Source the radius_manager.sh script to access the main_menu function
     source "$SCRIPT_DIR/radius_manager.sh"
     main_menu
 }

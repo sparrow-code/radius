@@ -1,136 +1,121 @@
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./radius.sh fix
+/home/sdworlld/isp/radius/modules/install.sh: line 374: syntax error near unexpected token `}'
+/home/sdworlld/isp/radius/modules/install.sh: line 374: `        }'
 
-[2025-04-13 16:01:32] Testing user authentication: testuser
-Sent Access-Request Id 146 from 0.0.0.0:38178 to 127.0.0.1:1812 length 78
-        User-Name = "testuser"
-        User-Password = "password"
-        NAS-IP-Address = 127.0.0.1
-        NAS-Port = 0
-        Cleartext-Password = "password"
-Received Access-Reject Id 146 from 127.0.0.1:1812 to 127.0.0.1:38178 length 38
-        Message-Authenticator = 0xc347b60989652c1961cf74834745ce09
-(0) -: Expected Access-Accept got Access-Reject
-[2025-04-13 16:01:33] ERROR: Authentication test failed for user testuser!
-Press Enter to continue...
+==== Fixing Common Issues ====
 
-
-
-
-
-Choose an option:
-1) Start service
-2) Stop service
-3) Restart service
-4) Reload configuration
-5) View detailed status
-0) Return to main menu
-
-Enter your choice [0-5]: 3
-
-=== FreeRADIUS Service Management ===
-
-[2025-04-13 16:02:14] Restarting FreeRADIUS service...
-
-=== FreeRADIUS Service Status ===
-
-Status: ACTIVE
-     Active: active (running) since Sun 2025-04-13 16:02:16 IST; 2s ago
-   Main PID: 37235 (freeradius)
-      Tasks: 6 (limit: 4575)
-
-Port Status:
-udp   UNCONN 0      0          127.0.0.1:18120      0.0.0.0:*
-udp   UNCONN 0      0            0.0.0.0:1812       0.0.0.0:*
-udp   UNCONN 0      0            0.0.0.0:1813       0.0.0.0:*
-udp   UNCONN 0      0               [::]:1812          [::]:*
-udp   UNCONN 0      0               [::]:1813          [::]:*
-Press Enter to continue...
-
-
-1) Start service
-2) Stop service
-3) Restart service
-4) Reload configuration
-5) View detailed status
-0) Return to main menu
-
-Enter your choice [0-5]: 5
-● freeradius.service - FreeRADIUS multi-protocol policy server
-     Loaded: loaded (/lib/systemd/system/freeradius.service; enabled; vendor preset: enabled)
-     Active: active (running) since Sun 2025-04-13 16:02:16 IST; 30s ago
-       Docs: man:radiusd(8)
-             man:radiusd.conf(5)
-             http://wiki.freeradius.org/
-             http://networkradius.com/doc/
-    Process: 37234 ExecStartPre=/usr/sbin/freeradius $FREERADIUS_OPTIONS -Cx -lstdout (code=exited, status=0/SUCCESS)
-   Main PID: 37235 (freeradius)
-     Status: "Processing requests"
-      Tasks: 6 (limit: 4575)
-     Memory: 78.7M (limit: 2.0G)
-        CPU: 1.326s
-     CGroup: /system.slice/freeradius.service
-             └─37235 /usr/sbin/freeradius -f
-
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type PAP for attr Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type CHAP for attr Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Auth-Type MS-CHAP for attr Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Autz-Type New-TLS-Connection for attr Autz-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type REJECT for attr Post-Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type Challenge for attr Post-Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Compiling Post-Auth-Type Client-Lost for attr Post-Auth-Type
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: radiusd: #### Skipping IP addresses and Ports ####
-Apr 13 16:02:15 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37234]: Configuration appears to be OK
-Apr 13 16:02:16 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Started FreeRADIUS multi-protocol policy server.
-
-
-OpenVPN Integration
-
-Choose an option:
-1) Configure OpenVPN RADIUS authentication
-2) Check OpenVPN integration status
-3) View integration instructions
-0) Return to main menu
-
-Enter your choice [0-3]: 2
-
-Checking OpenVPN integration status...
-✗ OpenVPN policy is missing
-✗ OpenVPN RADIUS client is not configured
-✗ OpenVPN policy is not referenced in site configuration
-
-OpenVPN server configuration:
-✗ RADIUS plugin is not configured in OpenVPN
-Press Enter to continue...
-
-
-
-
-OpenVPN Integration
-
-Choose an option:
-1) Configure OpenVPN RADIUS authentication
-2) Check OpenVPN integration status
-3) View integration instructions
-0) Return to main menu
-
-Enter your choice [0-3]: 1
-
-=== OpenVPN Integration ===
-
-Detected OpenVPN IP: 10.8.0.1
-Use this IP? [Y/n]: Y
-Enter shared secret for RADIUS-OpenVPN [vpn_radius_secret]:
-[2025-04-13 16:10:12] OpenVPN configuration script not found. Manually configuring...
-[2025-04-13 16:10:12] Updating clients.conf for OpenVPN...
-[2025-04-13 16:10:12] Adding OpenVPN server as RADIUS client...
-[2025-04-13 16:10:12] OpenVPN RADIUS client configuration updated.
-[2025-04-13 16:10:12] Creating OpenVPN policy...
-[2025-04-13 16:10:12] Updating site configuration...
-[2025-04-13 16:10:12] Creating OpenVPN configuration instructions...
-[2025-04-13 16:10:12] OpenVPN integration configured. Instructions saved to:
-/etc/freeradius/3.0/openvpn_radius_config.txt
+[2025-04-13 16:18:48] Checking for common issues...
+[2025-04-13 16:18:48] Fixing directory permissions...
+[2025-04-13 16:18:48] Checking OpenVPN policy syntax...
+[2025-04-13 16:18:48] Restarting FreeRADIUS service...
 Job for freeradius.service failed because the control process exited with error code.
 See "systemctl status freeradius.service" and "journalctl -xeu freeradius.service" for details.
-[2025-04-13 16:10:12] ERROR: FreeRADIUS failed to restart. Check logs for details.
-Press Enter to continue...
+[2025-04-13 16:18:51] ERROR: FreeRADIUS service failed to start.
+Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37859]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
+Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[37859]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
+Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
+Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
+Apr 13 16:18:47 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
+Apr 13 16:18:48 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Stopped FreeRADIUS multi-protocol policy server.
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Starting FreeRADIUS multi-protocol policy server...
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: FreeRADIUS Version 3.0.26
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Copyright (C) 1999-2021 The FreeRADIUS server project and contributors
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: PARTICULAR PURPOSE
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: You may redistribute copies of FreeRADIUS under the terms of the
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: GNU General Public License
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: For more information about these matters, see the file named COPYRIGHT
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Starting - reading configuration files ...
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: /etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com freeradius[38203]: Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Control process exited, code=exited, status=1/FAILURE
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: freeradius.service: Failed with result 'exit-code'.
+Apr 13 16:18:50 0qKKkjgGSCulmW8XMW2t.xenax-cloud.com systemd[1]: Failed to start FreeRADIUS multi-protocol policy server.
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
+
+
+
+
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo bash ./radius.sh user add testuser password vpnusers
+/home/sdworlld/isp/radius/modules/install.sh: line 374: syntax error near unexpected token `}'
+/home/sdworlld/isp/radius/modules/install.sh: line 374: `        }'
+
+==== Add/Update User ====
+
+[2025-04-13 16:19:32] Processing user: testuser
+[2025-04-13 16:19:32] Using PostgreSQL database...
+[2025-04-13 16:19:33] User already exists. Updating password...
+UPDATE 1
+[2025-04-13 16:19:33] Adding user to group: vpnusers
+[2025-04-13 16:19:33] Group vpnusers does not exist. Creating group...
+INSERT 0 1
+DELETE 0
+INSERT 0 1
+[2025-04-13 16:19:33] User testuser has been added/updated successfully!
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$
+
+
+
+
+
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo systemctl stop freeradius
+sdworlld@0qKKkjgGSCulmW8XMW2t:~/isp/radius$ sudo freeradius -X
+FreeRADIUS Version 3.0.26
+Copyright (C) 1999-2021 The FreeRADIUS server project and contributors
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE
+You may redistribute copies of FreeRADIUS under the terms of the
+GNU General Public License
+For more information about these matters, see the file named COPYRIGHT
+Starting - reading configuration files ...
+including dictionary file /usr/share/freeradius/dictionary
+including dictionary file /usr/share/freeradius/dictionary.dhcp
+including dictionary file /usr/share/freeradius/dictionary.vqp
+including dictionary file /etc/freeradius/3.0/dictionary
+including configuration file /etc/freeradius/3.0/radiusd.conf
+including configuration file /etc/freeradius/3.0/proxy.conf
+including configuration file /etc/freeradius/3.0/clients.conf
+including files in directory /etc/freeradius/3.0/mods-enabled/
+including configuration file /etc/freeradius/3.0/mods-enabled/digest
+including configuration file /etc/freeradius/3.0/mods-enabled/expiration
+including configuration file /etc/freeradius/3.0/mods-enabled/soh
+including configuration file /etc/freeradius/3.0/mods-enabled/detail.log
+including configuration file /etc/freeradius/3.0/mods-enabled/pap
+including configuration file /etc/freeradius/3.0/mods-enabled/utf8
+including configuration file /etc/freeradius/3.0/mods-enabled/linelog
+including configuration file /etc/freeradius/3.0/mods-enabled/always
+including configuration file /etc/freeradius/3.0/mods-enabled/ntlm_auth
+including configuration file /etc/freeradius/3.0/mods-enabled/expr
+including configuration file /etc/freeradius/3.0/mods-enabled/preprocess
+including configuration file /etc/freeradius/3.0/mods-enabled/attr_filter
+including configuration file /etc/freeradius/3.0/mods-enabled/detail
+including configuration file /etc/freeradius/3.0/mods-enabled/files
+including configuration file /etc/freeradius/3.0/mods-enabled/sql
+including configuration file /etc/freeradius/3.0/mods-config/sql/main/sqlite/queries.conf
+including configuration file /etc/freeradius/3.0/mods-enabled/realm
+including configuration file /etc/freeradius/3.0/mods-enabled/passwd
+including configuration file /etc/freeradius/3.0/mods-enabled/dynamic_clients
+including configuration file /etc/freeradius/3.0/mods-enabled/chap
+including configuration file /etc/freeradius/3.0/mods-enabled/radutmp
+including configuration file /etc/freeradius/3.0/mods-enabled/unpack
+including configuration file /etc/freeradius/3.0/mods-enabled/logintime
+including configuration file /etc/freeradius/3.0/mods-enabled/unix
+including configuration file /etc/freeradius/3.0/mods-enabled/cache_eap
+including configuration file /etc/freeradius/3.0/mods-enabled/sradutmp
+including configuration file /etc/freeradius/3.0/mods-enabled/echo
+including configuration file /etc/freeradius/3.0/mods-enabled/mschap
+including configuration file /etc/freeradius/3.0/mods-enabled/replicate
+including configuration file /etc/freeradius/3.0/mods-enabled/exec
+including configuration file /etc/freeradius/3.0/mods-enabled/eap
+including files in directory /etc/freeradius/3.0/policy.d/
+including configuration file /etc/freeradius/3.0/policy.d/dhcp
+including configuration file /etc/freeradius/3.0/policy.d/debug
+including configuration file /etc/freeradius/3.0/policy.d/moonshot-targeted-ids
+including configuration file /etc/freeradius/3.0/policy.d/abfab-tr
+including configuration file /etc/freeradius/3.0/policy.d/filter
+including configuration file /etc/freeradius/3.0/policy.d/cui
+including configuration file /etc/freeradius/3.0/policy.d/openvpn
+/etc/freeradius/3.0/policy.d/openvpn[19]: Expecting section start brace '{' after "reject Invalid username format"
+Errors reading or parsing /etc/freeradius/3.0/radiusd.conf
 
 
