@@ -63,6 +63,13 @@ show_help() {
     echo "  radius.sh logs 50                  - Show last 50 log lines"
 }
 
+# Function to launch the interactive menu
+launch_menu() {
+    # Source the radius_manager.sh script which contains the main_menu function
+    source "$SCRIPT_DIR/radius_manager.sh"
+    main_menu
+}
+
 # Main function
 main() {
     if [ $# -eq 0 ]; then

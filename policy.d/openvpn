@@ -8,7 +8,8 @@ policy openvpn {
     }
     
     # Check if user exists
-    if (User-Name =~ /^[[:alnum:]._-]+$/) {        # Valid username format, continue
+    if (User-Name =~ /^[[:alnum:]._-]+$/) {
+        # Valid username format, continue
         update control {
             Auth-Type := PAP
         }
