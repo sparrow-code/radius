@@ -13,10 +13,7 @@ policy openvpn {
             Auth-Type := PAP
         }
         ok    
-    } else {
-        # Invalid username format
-        reject {
-            &reply-message = "Invalid username format"
-        }
+    } else {        # Invalid username format
+        reject "Invalid username format"
     }
 }
