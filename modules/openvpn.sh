@@ -22,14 +22,10 @@ configure_openvpn() {
         return 1
     fi
     
-    # Get OpenVPN server IP
-    OPENVPN_IP=$(ip addr show tun0 2>/dev/null | grep -oP 'inet \K[\d.]+' || echo "")
-    if [ -z "$OPENVPN_IP" ]; then
-        # If tun0 doesn't exist, use server's main IP
-        OPENVPN_IP=$(ip addr | grep -oP 'inet \K[\d.]+' | grep -v '127.0.0.1' | head -n 1)
-    fi
+    # Set default OpenVPN VPN tunnel IP (usually 10.8.0.1 for tun0)
+    OPENVPN_IP="10.8.0.1"
     
-    echo -e "Detected OpenVPN IP: ${GREEN}$OPENVPN_IP${NC}"
+    echo -e "Default OpenVPN IP for MikroTik router authentication: ${GREEN}$OPENVPN_IP${NC}"
     read -p "Use this IP? [Y/n]: " use_detected_ip
     if [[ $use_detected_ip =~ ^[Nn]$ ]]; then
         read -p "Enter OpenVPN server IP: " OPENVPN_IP

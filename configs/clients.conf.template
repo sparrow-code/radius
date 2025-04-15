@@ -1,0 +1,26 @@
+# Default RADIUS client configuration
+
+# Local system that can send packets to this server
+client localhost {
+    ipaddr = 127.0.0.1
+    secret = testing123
+    shortname = localhost
+    require_message_authenticator = no
+}
+
+# OpenVPN server client
+client openvpn_server {
+    ipaddr = 10.8.0.1
+    secret = testing123
+    shortname = openvpn
+    nastype = other
+    require_message_authenticator = no
+}
+
+# Add additional clients below:
+# client example {
+#     ipaddr = 192.0.2.1
+#     secret = YOUR_SECRET_HERE
+#     shortname = example
+#     nastype = other
+# }

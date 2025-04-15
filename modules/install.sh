@@ -148,6 +148,9 @@ create_directory_structure() {
 configure_postgresql() {
     section "PostgreSQL Configuration"
     
+    # Source the constants file to get database settings
+    source "$SCRIPT_DIR/utils/constants.sh"
+    
     # Check if PostgreSQL is running
     log "Starting PostgreSQL service..."
     systemctl start postgresql
@@ -158,24 +161,24 @@ configure_postgresql() {
         return 1
     fi
     
-    # Check if radius user exists
-    RADIUS_USER_EXISTS=$(su - postgres -c "psql -t -c \"SELECT 1 FROM pg_roles WHERE rolname='radius'\"" | xargs)
+    # Check if database user exists
+    RADIUS_USER_EXISTS=$(su - postgres -c "psql -t -c \"SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'\"" | xargs)
     
     if [ -z "$RADIUS_USER_EXISTS" ]; then
-        log "Creating PostgreSQL user 'radius'..."
-        su - postgres -c "psql -c \"CREATE USER radius WITH PASSWORD 'radpass';\""
+        log "Creating PostgreSQL user '$DB_USER'..."
+        su - postgres -c "psql -c \"CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';\""
     else
-        log "PostgreSQL user 'radius' already exists."
+        log "PostgreSQL user '$DB_USER' already exists."
     fi
     
-    # Check if radius database exists
-    DB_EXISTS=$(su - postgres -c "psql -l | grep -c radius")
+    # Check if database exists
+    DB_EXISTS=$(su - postgres -c "psql -l | grep -c $DB_NAME")
     
     if [ "$DB_EXISTS" -eq 0 ]; then
-        log "Creating 'radius' database..."
-        su - postgres -c "psql -c \"CREATE DATABASE radius WITH OWNER radius;\""
+        log "Creating '$DB_NAME' database..."
+        su - postgres -c "psql -c \"CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;\""
     else
-        log "Database 'radius' already exists."
+        log "Database '$DB_NAME' already exists."
     fi
     
     # Import schema if tables don't exist
@@ -317,9 +320,9 @@ sql {
     # Connection info
     server = "localhost"
     port = 5432
-    login = "radius"
-    password = "radpass"
-    radius_db = "radius"
+    login = "$DB_USER"
+    password = "$DB_PASS"
+    radius_db = "$DB_NAME"
     
     # Connection pool optimization
     pool {

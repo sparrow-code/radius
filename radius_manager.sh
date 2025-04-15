@@ -4,35 +4,31 @@
 # This script provides a management interface for FreeRADIUS server
 # Usage: sudo bash radius_manager.sh [option]
 
-# Source common utilities
-source "$(dirname "$0")/utils/common.sh"
-
 # Script directory
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 UTILS_DIR="$SCRIPT_DIR/utils"
 
+# Source common utilities
+source "$UTILS_DIR/common.sh"
+
+# Source constants for consistent configuration values
+source "$UTILS_DIR/constants.sh"
+
 # Check if running as root
 check_root
 
-# Function to display warnings
-warn() {
-    echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
-}
-
-# Function to display errors
-error() {
-    echo -e "${RED}[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}"
-}
-
-# Function to display section headers
-section() {
-    echo -e "\n${BLUE}=== $1 ===${NC}\n"
-}
-
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+# Load all module files with proper error handling
+log "Loading modules..."
+for module in "$SCRIPT_DIR/modules"/*.sh; do
+    if [ -f "$module" ]; then
+        module_name=$(basename "$module")
+        log "Loading module: $module_name"
+        source "$module" || {
+            error "Failed to load module: $module_name"
+            exit 1
+        }
+    fi
+done
 
 # Function to check if FreeRADIUS is installed
 check_freeradius_installed() {

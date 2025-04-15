@@ -1,0 +1,15 @@
+NAS-Identifier=openvpn
+Service-Type=5
+Framed-Protocol=1
+NAS-Port-Type=5
+NAS-IP-Address=10.8.0.1  # Your OpenVPN server IP from vpn.txt
+OpenVPNConfig=/etc/openvpn/server.conf
+overwriteccfiles=true
+server {
+    acctport=1813
+    authport=1812
+    name=127.0.0.1       # FreeRADIUS is on the same server as OpenVPN
+    retry=1
+    wait=1
+    sharedsecret=testing123  # Matches clients.conf
+}

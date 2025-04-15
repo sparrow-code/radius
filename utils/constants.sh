@@ -5,7 +5,7 @@
 
 # Default database settings
 DB_NAME="radius"
-DB_USER="radius"
+DB_USER="freerad"
 DB_PASS="radpass"
 
 # Default RADIUS settings
