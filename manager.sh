@@ -723,7 +723,7 @@ batch_users() {
     echo "Error: Batch file is required"
     usage
     exit 1
-  }
+  fi
 
   echo "==================================================="
   echo "           RADIUS Management System"
@@ -742,7 +742,7 @@ batch_users() {
   if ! command -v jq >/dev/null 2>&1; then
     echo "Error: jq is required for batch operations. Please install it with 'apt-get install jq'"
     exit 1
-  }
+  fi
   
   # Process each user in the batch file
   user_count=$(jq length "${BATCH_FILE}")
