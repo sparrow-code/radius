@@ -669,7 +669,7 @@ delete_user() {
       if [ "$user_exists" -eq 0 ]; then
         echo "Error: User '${USERNAME}' does not exist"
         exit 1
-      }
+      fi
       
       # Delete user from all related tables
       mysql -e "DELETE FROM radcheck WHERE username='${USERNAME}';" || echo "Unable to update MySQL database"
@@ -683,7 +683,7 @@ delete_user() {
       if [ "$user_exists" -eq 0 ]; then
         echo "Error: User '${USERNAME}' does not exist"
         exit 1
-      }
+      fi
       
       psql -c "BEGIN; DELETE FROM radcheck WHERE username='${USERNAME}'; DELETE FROM radreply WHERE username='${USERNAME}'; DELETE FROM radusergroup WHERE username='${USERNAME}'; COMMIT;" || echo "Unable to update PostgreSQL database"
     fi
@@ -692,7 +692,7 @@ delete_user() {
     if ! grep -q "^${USERNAME}" "${USERS_FILE}"; then
       echo "Error: User '${USERNAME}' does not exist"
       exit 1
-    }
+    fi
     
     tmp_file=$(mktemp)
     
