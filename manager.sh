@@ -736,7 +736,7 @@ batch_users() {
   if [[ ! -f "${BATCH_FILE}" ]]; then
     echo "Error: Batch file '${BATCH_FILE}' not found"
     exit 1
-  }
+  fi
   
   # Parse JSON file - requires jq
   if ! command -v jq >/dev/null 2>&1; then
