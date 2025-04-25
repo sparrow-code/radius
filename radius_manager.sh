@@ -697,7 +697,137 @@ EOF
 
 # Function to fix common issues
 fix_common_issues() {
+# Function to fix permissions for FreeRADIUS configuration files
+fix_permissions() {
+    section "Fixing Permissions for FreeRADIUS"
+    
+    local config_dir=$(find_freeradius_dir)
+    if [ -n "$config_dir" ]; then
+        log "Setting correct permissions for configuration files..."
+        sudo chown root:freerad "$config_dir"/*.conf
+        sudo chmod 640 "$config_dir"/*.conf
+        sudo find "$config_dir" -type d -exec chmod 755 {} \;
+        sudo find "$config_dir" -type f -exec chmod 644 {} \;
+        sudo find "$config_dir" -name "*.conf" -exec chmod 640 {} \;
+        sudo chown -R freerad:freerad "$config_dir"
+        
+        log "Permissions updated for FreeRADIUS configuration files."
+    else
+        error "Cannot find FreeRADIUS configuration directory."
+        return 1
+    fi
+}
+
+# Function to configure connection to external PostgreSQL database
+configure_external_db() {
+    section "Configuring External PostgreSQL Database"
+    
+    local config_dir=$(find_freeradius_dir)
+    if [ -n "$config_dir" ]; then
+        log "Updating SQL module configuration for external database..."
+        
+        # Prompt for database connection details
+        read -p "Enter PostgreSQL server IP or hostname [160.191.14.56]: " db_host
+        db_host=${db_host:-160.191.14.56}
+        
+        read -p "Enter PostgreSQL port [5432]: " db_port
+        db_port=${db_port:-5432}
+        
+        read -p "Enter PostgreSQL database name [radius_db]: " db_name
+        db_name=${db_name:-radius_db}
+        
+        read -p "Enter PostgreSQL username [freerad]: " db_user
+        db_user=${db_user:-freerad}
+        
+        read -p "Enter PostgreSQL password [radpass]: " db_pass
+        db_pass=${db_pass:-radpass}
+        
+        # Update the SQL module configuration file
+        if [ -f "$config_dir/mods-available/sql" ]; then
+            sudo sed -i "s/server = \"localhost\"/server = \"$db_host\"/" "$config_dir/mods-available/sql"
+            sudo sed -i "s/port = 5432/port = $db_port/" "$config_dir/mods-available/sql"
+            sudo sed -i "s/database = \"radius\"/database = \"$db_name\"/" "$config_dir/mods-available/sql"
+            sudo sed -i "s/login = \"radius\"/login = \"$db_user\"/" "$config_dir/mods-available/sql"
+            sudo sed -i "s/password = \"radpass\"/password = \"$db_pass\"/" "$config_dir/mods-available/sql"
+            
+            log "SQL module configuration updated for external database."
+            
+            # Enable SQL module if not already enabled
+            if [ ! -L "$config_dir/mods-enabled/sql" ]; then
+                sudo ln -sf ../mods-available/sql "$config_dir/mods-enabled/sql"
+                log "SQL module enabled."
+            fi
+        else
+            warn "SQL module configuration file not found."
+            return 1
+        fi
+    else
+        error "Cannot find FreeRADIUS configuration directory."
+        return 1
+    fi
+}
     section "Fix Common Issues"
+# Function to fix common issues
+fix_common_issues() {
+    section "Fix Common Issues"
+    
+    log "Running diagnostics to identify issues..."
+    
+    # Check service status
+    if ! systemctl is-active --quiet freeradius; then
+        warn "FreeRADIUS service is not running."
+    fi
+    
+    # Check database connection
+    if ! su - postgres -c "psql -c \"\\l\" | grep -q radius"; then
+        warn "PostgreSQL radius database not found or cannot connect."
+    fi
+    
+    # Check for SQL module
+    local config_dir=$(find_freeradius_dir)
+    if [ -n "$config_dir" ]; then
+        if [ ! -L "$config_dir/mods-enabled/sql" ]; then
+            warn "SQL module not enabled."
+            
+            if [ -f "$config_dir/mods-available/sql" ]; then
+                log "Enabling SQL module..."
+                sudo ln -sf ../mods-available/sql "$config_dir/mods-enabled/sql"
+            else
+                warn "SQL module not found in mods-available."
+            fi
+        fi
+    fi
+    
+    # Fix permissions using the dedicated function
+    fix_permissions
+    
+    # Configure external database if needed
+    read -p "Do you want to configure connection to an external PostgreSQL database? [y/N]: " config_db
+    if [[ $config_db =~ ^[Yy]$ ]]; then
+        configure_external_db
+    fi
+    
+    # Run the comprehensive fix script if available
+    if [ -f "${SCRIPT_DIR}/fix_freeradius_install_updated.sh" ]; then
+        log "Running comprehensive fix script..."
+        read -p "Do you want to run the comprehensive fix script? This will attempt to repair the entire installation. [y/N]: " run_fix
+        if [[ $run_fix =~ ^[Yy]$ ]]; then
+            bash "${SCRIPT_DIR}/fix_freeradius_install_updated.sh"
+            return
+        fi
+    fi
+    
+    # Restart service
+    log "Restarting FreeRADIUS service..."
+    sudo systemctl restart freeradius
+    
+    if systemctl is-active --quiet freeradius; then
+        log "FreeRADIUS service is now running!"
+    else
+        error "FreeRADIUS service failed to start. Checking logs..."
+        sudo journalctl -u freeradius -n 20
+    fi
+}
     
     log "Running diagnostics to identify issues..."
     
